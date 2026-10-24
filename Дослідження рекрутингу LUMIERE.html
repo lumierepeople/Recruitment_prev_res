@@ -1,0 +1,270 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Дослідження рекрутингу LUMIERE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@500;700&family=Onest:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky tab bar over one reading column; a route-map strip as the page's one bold move. */
+:root {
+  --bg: #f4f7f6;
+  --surface: #ffffff;
+  --ink: #16302c;
+  --muted: #5a6e6a;
+  --line: #d3dedb;
+  --accent: #0f6b5c;
+  --accent-soft: #e0efeb;
+  --warm: #a85a14;
+  --warm-soft: #f8ead9;
+  --display: "Geologica", "Segoe UI", system-ui, sans-serif;
+  --body: "Onest", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1b19; --surface: #162624; --ink: #e2eeeb; --muted: #9bb2ad; --line: #2b4440;
+    --accent: #55c7ae; --accent-soft: #1b3a35; --warm: #e0a15f; --warm-soft: #3a2a17; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1b19; --surface: #162624; --ink: #e2eeeb; --muted: #9bb2ad; --line: #2b4440;
+  --accent: #55c7ae; --accent-soft: #1b3a35; --warm: #e0a15f; --warm-soft: #3a2a17; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; }
+.wrap { max-width: 920px; margin: 0 auto; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.2; text-wrap: balance; margin: 0; }
+header { padding-top: 36px; padding-bottom: 20px; }
+.kicker { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-size: clamp(28px, 6vw, 44px); font-weight: 700; margin-top: 6px; }
+.lead { color: var(--muted); max-width: 62ch; margin: 10px 0 0; }
+nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.tabs { display: flex; gap: 4px; overflow-x: auto; padding: 8px 0; scrollbar-width: none; }
+.tabs button { flex: none; font: 600 14px var(--body); color: var(--muted); background: none; border: 0; padding: 9px 14px; border-radius: 999px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--bg); }
+.tabs button:hover:not([aria-selected="true"]) { background: var(--accent-soft); color: var(--ink); }
+section { padding-top: 28px; }
+section[hidden] { display: none; }
+h2 { font-size: 24px; margin-bottom: 14px; }
+h3 { font-size: 17px; margin-bottom: 6px; }
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; min-width: 0; }
+.stat { font: 700 34px var(--display); color: var(--accent); line-height: 1.1; }
+.stat small { font: 500 14px var(--body); color: var(--muted); }
+.label { font-size: 13px; color: var(--muted); }
+.bar { height: 8px; background: var(--accent-soft); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; width: 0; transition: width .5s; }
+.bar.warm > i { background: var(--warm); }
+.bar.warm { background: var(--warm-soft); }
+ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+ol.num { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; }
+.split { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 14px; }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px; }
+.stage > button { width: 100%; text-align: left; font: inherit; color: inherit; background: none; border: 0; padding: 16px 18px; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 4px 14px; align-items: center; }
+.stage .pct { font: 700 22px var(--display); color: var(--accent); }
+.stage .name { font-weight: 600; }
+.stage .bar { grid-column: 1 / -1; margin-top: 4px; }
+.stage .body { padding: 0 18px 16px; border-top: 1px solid var(--line); }
+.item { display: grid; grid-template-columns: 24px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+.item:last-child { border-bottom: 0; }
+.dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); margin-top: 2px; display: grid; place-items: center; font-size: 12px; color: var(--bg); }
+.dot.on { background: var(--accent); border-color: var(--accent); }
+.note { display: block; font-size: 13px; color: var(--muted); }
+.count { font: 600 14px var(--body); color: var(--accent); font-variant-numeric: tabular-nums; }
+.interview { display: grid; grid-template-columns: 1fr 64px; gap: 4px 12px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+.interview:last-child { border-bottom: 0; }
+.interview .bar { grid-column: 1 / -1; margin: 0; }
+.seg { display: grid; gap: 4px; }
+.seg .id { font: 700 13px var(--display); color: var(--accent); }
+.pill { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.route { display: flex; gap: 0; overflow-x: auto; padding: 18px 2px 8px; margin: 0 0 14px; }
+.route button { flex: none; position: relative; font: 600 14px var(--body); color: var(--ink); background: none; border: 0; padding: 22px 16px 4px; cursor: pointer; white-space: nowrap; }
+.route button::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 2px; background: var(--line); }
+.route button::after { content: ""; position: absolute; left: 50%; top: 2px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--bg); border: 3px solid var(--accent); }
+.route button[aria-pressed="true"]::after { background: var(--accent); }
+.route button[aria-pressed="true"] { color: var(--accent); }
+.search { width: 100%; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; margin-bottom: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.chips button { font: 600 13px var(--body); color: var(--muted); background: var(--surface); border: 1px solid var(--line); padding: 7px 14px; border-radius: 99px; cursor: pointer; }
+.chips button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.mat { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; text-decoration: none; color: var(--ink); }
+.mat:hover { border-color: var(--accent); }
+.mat span:last-child { color: var(--accent); font-weight: 600; font-size: 14px; }
+.tl { border-left: 2px solid var(--line); margin-left: 6px; display: grid; gap: 14px; padding-left: 18px; }
+.tl > div { position: relative; }
+.tl > div::before { content: ""; position: absolute; left: -25px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.tl b { font-variant-numeric: tabular-nums; }
+.decision { border-left: 3px solid var(--warm); }
+.warnbox { background: var(--warm-soft); border-radius: 12px; padding: 16px 18px; }
+.warnbox h3 { color: var(--warm); }
+.warnbox ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+footer { color: var(--muted); font-size: 13px; padding-top: 32px; }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Картка Trello · LUMIERE</div>
+    <h1>Дослідження рекрутингу</h1>
+    <p class="lead" id="lead"></p>
+  </header>
+  <nav><div class="tabs" role="tablist" id="tabs"></div></nav>
+  <main id="main"></main>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const D = {"title": "Дослідження рекрутингу LUMIERE", "subtitle": "Усе з картки Trello в одному місці: мета, етапи, сегменти, матеріали й хід роботи", "meta": {"created": "17 березня 2026", "lastActivity": "1 вересня 2026", "deadline": "31 серпня 2026, 23:30", "column": "Робиться", "researcher": "Ксеня (у Trello: Oksana Lutsenko)"}, "goal": {"task": "Провести дослідження, щоб зрозуміти, як люди приймають рішення приєднатись до війська, і на основі цього почати системно приводити нових людей та говорити з ними так, щоб це впливало на їхнє рішення.", "why": ["Щоб стабільно приводити нових людей у LUMIERE.", "Щоб комунікувати так, щоб це впливало на рішення, а не тільки давало охоплення."], "reason": "Зараз ми комунікуємо дуже інтуїтивно, а після дослідження будемо комунікувати системно.", "outputs": ["3–5 чітких сегментів аудиторії", "Розуміння, як люди приймають рішення «йти / не йти»", "Список ключових бар'єрів, страхів і тригерів", "Які меседжі працюють і які не працюють", "Основа для контенту рекрутингової PR-кампанії"]}, "stages": [{"id": 1, "name": "Підготовка до дослідження", "percent": 100, "items": [{"t": "Сформулювати гіпотези: чому люди не йдуть у військо і що може їх переконати", "done": true, "note": "Позначено 7 квітня 2026"}, {"t": "Визначити цільові аудиторії: ті, хто не служить; ті, хто думає; ті, хто служить з 2014/2022; ті, хто почав служити нещодавно, з 2025/2026 (ще треба подумати)", "done": true, "note": "Позначено 7 квітня 2026"}, {"t": "Підготувати гугл-форму для опитування", "done": true, "note": "Термін 5 липня, позначено 6 липня 2026"}, {"t": "Задизайнити сторітел про дослідження", "done": true, "note": "Позначено 15 серпня 2026"}, {"t": "Підготувати гугл-форму для опитувальника для підлітків", "done": true, "note": "Позначено 29 липня 2026"}]}, {"id": 2, "name": "Кількісне опитування: масштаб і загальні патерни поведінки", "percent": 50, "items": [{"t": "Запустити опитування (хотілося зібрати 300+ відповідей)", "done": true, "note": "Термін 9 липня, позначено 24 серпня 2026"}, {"t": "Дослідити ставлення до мобілізації, рівень страху і бар'єрів, рівень довіри до підрозділів (Азов, Трійка, Хартія, СБС, Ахілес, Немезіс та ін.) і що може вплинути на рішення", "done": false, "note": ""}]}, {"id": 3, "name": "Якісне дослідження (глибинні інтерв'ю)", "percent": 0, "items": [{"t": "З тими, хто мобілізувався в 2014–2022", "done": false, "have": 0, "need": 5}, {"t": "З тими, хто мобілізувався 1–1,5 року тому", "done": false, "have": 1, "need": 5}, {"t": "З молодими хлопцями до 25 років", "done": false, "have": 2, "need": 5}, {"t": "З підлітками", "done": false, "have": 2, "need": 5}, {"t": "З хлопцями з нашого підрозділу, які мобілізувалися у 2024/2025", "done": false, "have": 0, "need": 5}, {"t": "З тими, хто ухиляється від мобілізації", "done": false, "have": 2, "need": 5}, {"t": "З жінками, що долучилися до війська", "done": false, "have": 1, "need": 5}, {"t": "З тими, хто в СЗЧ", "done": false, "have": 0, "need": 5}, {"t": "З чоловіками 25+, які підпадають під мобілізацію і потенційно долучатимуться", "done": false, "have": 1, "need": 5}]}, {"id": 4, "name": "Аналіз отриманих даних", "percent": 14, "items": [{"t": "Виділити ключові сегменти аудиторії", "done": true, "note": "Позначено 3 серпня 2026"}, {"t": "Знайти повторювані патерни", "done": false, "note": ""}, {"t": "Сформувати бар'єри, тригери й мотивації", "done": false, "note": ""}, {"t": "Виписати всі отримані інсайти", "done": false, "note": ""}, {"t": "Сформувати меседжі: що говорити кожному сегменту і як закривати його страхи", "done": false, "note": ""}, {"t": "Сформувати контент-напрями: які теми та формати працюють", "done": false, "note": ""}, {"t": "Прописати помилки в комунікації, яких варто уникати", "done": false, "note": ""}]}], "segments": [{"id": "1.1", "name": "Мобілізовані 2014–2023", "link": "https://docs.google.com/spreadsheets/d/1wmyTLZV5ZFQi6pr0QETU0xZSdUbLVh8M72E_d8LuI2M/edit?usp=sharing", "interviews": "Інтерв'ю з мобілізованими 2014–2022: 0 з 5"}, {"id": "1.2", "name": "Мобілізовані 2024–2026", "link": "https://docs.google.com/spreadsheets/d/1vV2URN5YTO3L9yz1jV1hTOaV2RSDRf9v5vpYpSK6Obo/edit?gid=1150953968#gid=1150953968", "interviews": "Мобілізовані 1–1,5 року тому: 1 з 5; з нашого підрозділу 2024/2025: 0 з 5"}, {"id": "2", "name": "Чоловіки до 25 років", "link": "https://docs.google.com/spreadsheets/d/1RjnAKN0xjmXP7Qum5x9m5PouDvQOm3EvIBreDUMM4MU/edit?gid=2029051168#gid=2029051168", "interviews": "2 з 5"}, {"id": "3", "name": "Підлітки (15–18 років)", "link": "https://docs.google.com/spreadsheets/d/1ohl7alpFKKSzNqCHK0H1mu3pDKG1I4qvdjgwF4RkiDQ/edit?usp=sharing", "interviews": "2 з 5"}, {"id": "4", "name": "Ухиляються від мобілізації", "link": "https://docs.google.com/spreadsheets/d/1gfyuDYo1ottOag6kjXR9j0qeJ9GcReRHVrhoQd2-RJI/edit?gid=1138569116#gid=1138569116", "interviews": "2 з 5"}, {"id": "5", "name": "Жінки у війську", "link": "https://docs.google.com/spreadsheets/d/1yl5GVLLqdN0-0AP83g4aK24NSEAEYErkEYHwYbLruas/edit?gid=201997499#gid=201997499", "interviews": "1 з 5"}], "extraInterviewGroups": ["СЗЧ: 0 з 5", "Чоловіки 25+, які підпадають під мобілізацію: 1 з 5"], "materials": [{"group": "Гіпотези й сегменти", "name": "Гіпотези і сегменти (таблиця)", "link": "https://docs.google.com/spreadsheets/d/1RoQm0MDuoSN2jQPHYYUBANLqIKj_JrZD0ud9RrXNkRg/edit?gid=1643039780#gid=1643039780"}, {"group": "Сегменти", "name": "Сегмент 1.1. Мобілізовані 2014–2023", "link": "https://docs.google.com/spreadsheets/d/1wmyTLZV5ZFQi6pr0QETU0xZSdUbLVh8M72E_d8LuI2M/edit?usp=sharing"}, {"group": "Сегменти", "name": "Сегмент 1.2. Чоловіки, мобілізовані 2024–2026", "link": "https://docs.google.com/spreadsheets/d/1vV2URN5YTO3L9yz1jV1hTOaV2RSDRf9v5vpYpSK6Obo/edit?gid=1150953968#gid=1150953968"}, {"group": "Сегменти", "name": "Сегмент 2. Чоловіки до 25 років", "link": "https://docs.google.com/spreadsheets/d/1RjnAKN0xjmXP7Qum5x9m5PouDvQOm3EvIBreDUMM4MU/edit?gid=2029051168#gid=2029051168"}, {"group": "Сегменти", "name": "Сегмент 3. Підлітки", "link": "https://docs.google.com/spreadsheets/d/1ohl7alpFKKSzNqCHK0H1mu3pDKG1I4qvdjgwF4RkiDQ/edit?usp=sharing"}, {"group": "Сегменти", "name": "Сегмент 4. Ухиляються від мобілізації", "link": "https://docs.google.com/spreadsheets/d/1gfyuDYo1ottOag6kjXR9j0qeJ9GcReRHVrhoQd2-RJI/edit?gid=1138569116#gid=1138569116"}, {"group": "Сегменти", "name": "Сегмент 5. Жінки", "link": "https://docs.google.com/spreadsheets/d/1yl5GVLLqdN0-0AP83g4aK24NSEAEYErkEYHwYbLruas/edit?gid=201997499#gid=201997499"}, {"group": "Опитувальники", "name": "Форма-опитувальник для дорослих", "link": "https://docs.google.com/forms/d/1hi8HKncgRmU3CCVs1lCg4gMbMMFiZjvPwJ8BadDNZMY/edit"}, {"group": "Опитувальники", "name": "Форма-опитувальник для підлітків", "link": "https://docs.google.com/forms/d/13B3LCpJTa-Lh4gMAMO_DjPyjA0LWM4tSJ7Sefr8Jxf8/edit"}, {"group": "Опитувальники", "name": "Відповіді: дорослі", "link": "https://docs.google.com/spreadsheets/d/1USbwY3-tOHmc6Xza9FIZQlHBAyStB2w71aFT4q3XSXA/edit?resourcekey=&gid=572866629#gid=572866629"}, {"group": "Опитувальники", "name": "Відповіді: підлітки", "link": "https://docs.google.com/spreadsheets/d/1VCODPSV_1E5ZEDkDrY5S8leOUIe6csNbbz0e6ZPXcLA/edit?resourcekey=&gid=767304135#gid=767304135"}, {"group": "Гайди", "name": "Питання для дорослих (гайд)", "link": "https://docs.google.com/document/d/10grYF3KJPo7LmdruCcXFohkymUK2I9gX7SWt4ykbCrI/edit?tab=t.0#heading=h.6hltyttaf9br"}, {"group": "Гайди", "name": "Гайд 15–18 років", "link": "https://docs.google.com/document/d/1cp804EVnue2QswBHY-NVvua9o2GuPR7-LAoc2WWI6xI/edit?tab=t.0#heading=h.vvk83vebfatx"}], "campaign": {"idea": "Подати опитування як маршрут із точки А (де людина зараз) у точку Б (де вона у війську). Заклик: «Шукай свою точку на карті і розкажи про неї більше». Тоді сегменти стають точками на карті.", "note": "Назви точок ще можна доопрацьовувати. У чернетках сторіс частина назв відрізняється від початкового списку.", "points": [{"name": "На старті", "who": "Підлітки 15–18", "gist": "Дорослі часто говорять про ваше покоління, але рідко питають, що ви самі думаєте. Анонімне опитування, жодних правильних чи неправильних відповідей. Для підлітків окремий опитувальник."}, {"name": "На роздоріжжі", "who": "Юнаки й юнки 18–25", "gist": "Покоління виросло під час війни й зараз вирішує, що з цим робити. Просять відповісти чесно, навіть якщо людина намагається про це не думати."}, {"name": "Перед вибором", "who": "Чоловіки 25+, які обирають підрозділ", "gist": "На п'ятому році війни питання вже не лише в тому, чи долучатися, а й до кого саме. Що впливає на вибір: люди, командири, репутація, досвід інших."}, {"name": "У строю", "who": "Діючі військові, що шукають іншу бригаду для переведення", "gist": "Люди вже служать, але відчувають, що можна робити це краще в іншому місці. Хочемо зрозуміти, як вони шукають кращий варіант і знаходять."}, {"name": "Власна логіка", "who": "Ті, що ухиляються від мобілізації", "gist": "Про причини не йти говорять переважно за них. Ми хочемо почути від самих людей. Не переконуємо, а розуміємо, як вони дійшли рішення."}, {"name": "Свідомий крок (в чернетці: «Її рішення» / «Я так вирішила»)", "who": "Жінки у війську", "gist": "Про чоловіків у війську говорять багато, про жінок майже ні. Жінка обирала, куди, до кого й на яких умовах. Питаємо, що було критично важливим."}, {"name": "Переосмислення шляху", "who": "Ветерани, що думають повернутися до служби й обирають бригаду", "gist": "У чернетках сторіс цієї точки немає окремим текстом."}, {"name": "Почати заново", "who": "СЗЧ, які шукають, у яку бригаду повернутися", "gist": "Людина має досвід служби, з різних причин залишила військо й думає повернутися, але в іншу бригаду. Хочемо зрозуміти, що допоможе повернутися усвідомлено."}], "frame": "Рішення долучитися до війська не народжується за один день. Припущення дослідження: у рішення є власний шлях, від ставлення до війни до вибору бригади чи переосмислення досвіду. LUMIERE TECH як волонтерська спільнота запускає власне дослідження цього шляху."}, "decisions": [{"date": "7 липня 2026", "who": "Olga Fall", "text": "Концепт сподобався. Для жінок потрібна інша назва, яка підкреслює, що це свідомий крок. Щодо ухилянтів варто навести трохи інше світло: у їхніх головах варіанти є, раз вони досі не воюють. Запропонувала допрацювати текст по ухилянтах."}, {"date": "14 липня 2026", "who": "акаунт Lumiere Tech", "text": "У текст для ухилянтів внести правки, щоб він не схиляв до рекрутингу. Важливо навпаки вислухати, чому ні, щоб опрацьовувати ці заперечення."}, {"date": "14 липня 2026", "who": "акаунт Lumiere Tech", "text": "Сторітел спершу дати Софії скоротити, бо текст завеликий. Потім у дизайн. Форму перевірити ще раз перед запуском з Пташкою."}, {"date": "4 серпня 2026", "who": "Саша", "text": "Ксеня попросила крім сторіс зробити картинку для репосту опитування в телеграм-канали. Потрібен текст або технічне завдання."}], "reconcile": ["У Trello шість сегментів: 1.1, 1.2, 2 (до 25), 3 (підлітки), 4 (ухилянти), 5 (жінки). На зустрічі 23 жовтня команда визначила чотири групи дорослих респондентів (мобілізовані 2024–2026; СЗЧ, які думають повернутися; ті, хто переводився чи хоче перевестися; чоловіки, які вагаються), а жінок, ухилянтів і мобілізованих через ТЦК не досліджує.", "У Trello заплановано 45 інтерв'ю (9 груп по 5), проведено 9. Зустріч 23 жовтня запропонувала мінімум 8 людей на сегмент.", "У Trello етап 2 передбачає кількісне опитування. На зустрічі 23 жовтня Даша запропонувала поки зосередитися на якісному."]};
+const TABS = [
+  ["overview", "Огляд"], ["stages", "Етапи"], ["segments", "Сегменти"], ["campaign", "Кампанія"]
+];
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+
+const interviews = D.stages[2].items;
+const have = interviews.reduce((a, i) => a + i.have, 0);
+const need = interviews.reduce((a, i) => a + i.need, 0);
+
+$("#lead").textContent = D.subtitle;
+$("#foot").textContent = "Дані: картка Trello, остання активність " + D.meta.lastActivity + ". Відсотки й лічильники взято з картки.";
+
+/* ---------- overview ---------- */
+function overview() {
+  const s = el("section");
+  s.innerHTML = `
+    <h2>Навіщо це дослідження</h2>
+    <div class="card"><p style="margin:0">${esc(D.goal.task)}</p></div>
+    <div class="split">
+      <div class="card"><h3>Чому ми це робимо</h3>
+        <ul class="plain">${D.goal.why.map(w => `<li>${esc(w)}</li>`).join("")}</ul>
+        <p class="label" style="margin:10px 0 0">${esc(D.goal.reason)}</p></div>
+      <div class="card"><h3>Що отримаємо на виході</h3>
+        <ol class="num">${D.goal.outputs.map(o => `<li>${esc(o)}</li>`).join("")}</ol></div>
+    </div>
+    <div id="matslot"></div>
+    <h2 style="margin-top:28px">Де ми зараз</h2>
+    <div class="grid">
+      ${D.stages.map(st => `<div class="card"><div class="label">Етап ${st.id}</div><div class="stat">${st.percent}%</div>
+        <div style="font-weight:600;margin-top:2px">${esc(st.name.split(":")[0])}</div>
+        <div class="bar"><i style="width:${st.percent}%"></i></div></div>`).join("")}
+      <div class="card"><div class="label">Інтерв'ю проведено</div><div class="stat">${have}<small> з ${need}</small></div>
+        <div style="margin-top:2px">9 груп респондентів по 5 людей</div>
+        <div class="bar warm"><i style="width:${pct(have, need)}%"></i></div></div>
+    </div>
+    <p class="label" style="margin-top:12px">Термін картки: ${esc(D.meta.deadline)}. Етап 3 у картці стоїть на 0%, хоча частина інтерв'ю вже зроблена.</p>
+    <div class="warnbox" style="margin-top:22px"><h3>Що відрізняється від зустрічі 23 жовтня</h3>
+      <ul>${D.reconcile.map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>`;
+  $("#matslot", s).replaceWith(materials());
+  requestAnimationFrame(() => s.querySelectorAll(".bar > i").forEach(i => { const w = i.style.width; i.style.width = 0; requestAnimationFrame(() => i.style.width = w); }));
+  return s;
+}
+
+/* ---------- stages ---------- */
+function stages() {
+  const s = el("section");
+  s.innerHTML = `<h2>Етапи й задачі</h2><p class="label" style="margin:-6px 0 14px">Натисніть на етап, щоб розгорнути чи згорнути його задачі.</p>`;
+  D.stages.forEach((st, idx) => {
+    const box = el("div", "stage");
+    const btn = el("button", "", `<div><div class="label">Етап ${st.id}</div><div class="name">${esc(st.name)}</div></div>
+      <div class="pct">${st.percent}%</div><div class="bar"><i style="width:${st.percent}%"></i></div>`);
+    btn.setAttribute("aria-expanded", idx === 2 ? "true" : "false");
+    const body = el("div", "body");
+    body.hidden = idx !== 2;
+    if (st.id === 3) {
+      body.innerHTML = st.items.map(i => `<div class="interview"><div>${esc(i.t)}</div><div class="count">${i.have} з ${i.need}</div>
+        <div class="bar warm"><i style="width:${pct(i.have, i.need)}%"></i></div></div>`).join("");
+    } else {
+      body.innerHTML = st.items.map(i => `<div class="item"><div class="dot ${i.done ? "on" : ""}">${i.done ? "✓" : ""}</div>
+        <div>${esc(i.t)}${i.note ? `<span class="note">${esc(i.note)}</span>` : ""}</div></div>`).join("");
+    }
+    btn.onclick = () => { const open = btn.getAttribute("aria-expanded") === "true"; btn.setAttribute("aria-expanded", String(!open)); body.hidden = open; };
+    box.append(btn, body);
+    s.append(box);
+  });
+  return s;
+}
+
+/* ---------- segments ---------- */
+function segments() {
+  const s = el("section");
+  s.innerHTML = `<h2>Сегменти аудиторії</h2><p class="label" style="margin:-6px 0 14px">Шість сегментів у картці. Для кожного є таблиця з відповідями респондентів.</p>
+    <div class="grid" id="seggrid"></div>
+    <h3 style="margin-top:26px">Інші групи в плані інтерв'ю</h3>
+    <ul class="plain" style="margin-top:8px">${D.extraInterviewGroups.map(g => `<li class="card">${esc(g)}</li>`).join("")}</ul>
+    <p class="label" style="margin-top:10px">Зв'язок груп інтерв'ю із сегментами зроблено за назвами, у картці його немає.</p>`;
+  const g = $("#seggrid", s);
+  D.segments.forEach(sg => {
+    g.append(el("div", "card seg", `<span class="id">Сегмент ${esc(sg.id)}</span><h3>${esc(sg.name)}</h3>
+      <span class="label">${esc(sg.interviews)}</span><a href="${esc(sg.link)}" target="_blank" rel="noopener">Відкрити таблицю</a>`));
+  });
+  return s;
+}
+
+/* ---------- campaign ---------- */
+function campaign() {
+  const c = D.campaign;
+  const s = el("section");
+  s.innerHTML = `<h2>Кампанія опитування</h2>
+    <div class="card"><p style="margin:0 0 8px">${esc(c.frame)}</p><p style="margin:0"><b>Ідея.</b> ${esc(c.idea)}</p></div>
+    <h3 style="margin-top:22px">Шукай свою точку на карті</h3>
+    <div class="route" id="route"></div><div id="point"></div>
+    <p class="label">${esc(c.note)}</p>`;
+  const r = $("#route", s), out = $("#point", s);
+  const show = i => {
+    const p = c.points[i];
+    [...r.children].forEach((b, j) => b.setAttribute("aria-pressed", String(i === j)));
+    out.innerHTML = `<div class="card"><span class="pill">${esc(p.who)}</span><h3 style="margin-top:10px">${esc(p.name)}</h3><p style="margin:0">${esc(p.gist)}</p></div>`;
+  };
+  c.points.forEach((p, i) => { const b = el("button", "", esc(p.name.split(" (")[0])); b.onclick = () => show(i); r.append(b); });
+  show(0);
+  const dec = el("div");
+  dec.innerHTML = `<h2 style="margin-top:30px">Рішення й правки до текстів</h2>` + D.decisions.map(d =>
+    `<div class="card decision" style="margin-bottom:10px"><div class="label">${esc(d.date)} · ${esc(d.who)}</div><p style="margin:4px 0 0">${esc(d.text)}</p></div>`).join("");
+  s.append(dec);
+  return s;
+}
+
+/* ---------- materials ---------- */
+function materials() {
+  const s = el("div");
+  s.style.marginTop = "28px";
+  const groups = ["Усі", ...new Set(D.materials.map(m => m.group))];
+  s.innerHTML = `<h2>Матеріали й посилання</h2>
+    <input class="search" id="q" type="search" placeholder="Шукати за назвою" aria-label="Шукати за назвою">
+    <div class="chips" id="chips"></div><div id="list"></div>`;
+  let g = "Усі", q = "";
+  const list = $("#list", s), chips = $("#chips", s);
+  const draw = () => {
+    const items = D.materials.filter(m => (g === "Усі" || m.group === g) && m.name.toLowerCase().includes(q));
+    list.innerHTML = items.length ? items.map(m => `<a class="mat" href="${esc(m.link)}" target="_blank" rel="noopener"><span>${esc(m.name)}<span class="note">${esc(m.group)}</span></span><span>Відкрити</span></a>`).join("")
+      : `<p class="label">Нічого не знайдено. Спробуйте іншу назву чи групу.</p>`;
+    [...chips.children].forEach(b => b.setAttribute("aria-pressed", String(b.textContent === g)));
+  };
+  groups.forEach(n => { const b = el("button", "", esc(n)); b.onclick = () => { g = n; draw(); }; chips.append(b); });
+  $("#q", s).oninput = e => { q = e.target.value.trim().toLowerCase(); draw(); };
+  draw();
+  return s;
+}
+
+const VIEWS = { overview, stages, segments, campaign, materials, history };
+const main = $("#main"), tabs = $("#tabs");
+function go(id, push) {
+  if (!VIEWS[id]) id = "overview";
+  main.replaceChildren(VIEWS[id]());
+  [...tabs.children].forEach(b => b.setAttribute("aria-selected", String(b.dataset.id === id)));
+  if (push) { try { history_.replaceState(null, "", "#" + id); } catch (e) {} }
+}
+const history_ = window.history;
+TABS.forEach(([id, label]) => {
+  const b = el("button", "", label); b.dataset.id = id; b.setAttribute("role", "tab");
+  b.onclick = () => { go(id, true); window.scrollTo({ top: 0 }); };
+  tabs.append(b);
+});
+go((location.hash || "").slice(1), false);
+</script>
+
+</body></html>
